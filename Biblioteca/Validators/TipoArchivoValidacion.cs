@@ -16,7 +16,7 @@ namespace Biblioteca.Validators
         {
             if (grupoTipoArchivo == GrupoTipoArchivo.Imagen)
             {
-                tiposValidos = new string[] { "img/jpeg", "img/png", "img/gif" };
+                tiposValidos = new string[] { "image/jpeg", "image/png", "image/gif" };
             }
         }
 
@@ -37,7 +37,7 @@ namespace Biblioteca.Validators
                 return ValidationResult.Success;
             }
 
-            // ContentType deberá ser uno de los tiposValidos { "img/jpeg", "img/png", "img/gif" } para pasar la validación
+            // ContentType deberá ser uno de los tiposValidos { "image/jpeg", "image/png", "image/gif" } para pasar la validación
             if (!tiposValidos.Contains(formFile.ContentType))
             {
                 return new ValidationResult($"El tipo del archivo debe ser uno de los siguientes: {string.Join(", ", tiposValidos)}");

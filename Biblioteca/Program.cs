@@ -1,5 +1,7 @@
+using Biblioteca.AutoMappers;
 using Biblioteca.DTOs;
 using Biblioteca.Models;
+using Biblioteca.Repository;
 using Biblioteca.Services;
 using Biblioteca.Validators;
 using FluentValidation;
@@ -37,7 +39,20 @@ builder.Services.AddScoped<IValidator<LibroUpdateDTO>, LibroUpdateValidator>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<IGestorArchivos, GestorArchivos>();
+builder.Services.AddTransient<OperacionesService>();
 
+// Repository
+builder.Services.AddScoped<IRepository<Autor>, AutorRepository>();
+builder.Services.AddScoped<IRepository<Editorial>, EditorialRepository>();
+builder.Services.AddScoped<IRepository<Libro>, LibroRepository>();
+
+// Mappers
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+// Add services to the container
+builder.Services.AddKeyedScoped<ICommonService<AutorDTO, AutorInsertDTO, AutorUpdateDTO>, AutorService>("autorService");
+builder.Services.AddKeyedScoped<ICommonService<EditorialDTO, EditorialInsertDTO, EditorialUpdateDTO>, EditorialService>("editorialService");
+builder.Services.AddKeyedScoped<ICommonService<LibroDTO, LibroInsertDTO, LibroUpdateDTO>, LibroService>("libroService");
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

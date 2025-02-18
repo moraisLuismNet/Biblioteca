@@ -10,5 +10,6 @@ namespace Biblioteca.Models
         public DbSet<Autor> Autores { get; set; }
         public DbSet<Editorial> Editoriales { get; set; }
         public DbSet<Libro> Libros { get; set; }
+        public DbSet<Operacion> Operaciones { get; set; }
     }
 }
