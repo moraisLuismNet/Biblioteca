@@ -1,5 +1,10 @@
+using Biblioteca.DTOs;
 using Biblioteca.Models;
+using Biblioteca.Services;
+using Biblioteca.Validators;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,10 +19,24 @@ builder.Services.AddDbContext<BibliotecaContext>(options =>
     options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 });
 
-builder.Services.AddControllers();
+// Evitar referencias circulares al utilizar include en los controllers
+builder.Services.AddControllers().AddJsonOptions(options =>
+options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Validators
+builder.Services.AddScoped<IValidator<AutorInsertDTO>, AutorInsertValidator>();
+builder.Services.AddScoped<IValidator<AutorUpdateDTO>, AutorUpdateValidator>();
+builder.Services.AddScoped<IValidator<EditorialInsertDTO>, EditorialInsertValidator>();
+builder.Services.AddScoped<IValidator<EditorialUpdateDTO>, EditorialUpdateValidator>();
+builder.Services.AddScoped<IValidator<LibroInsertDTO>, LibroInsertValidator>();
+builder.Services.AddScoped<IValidator<LibroUpdateDTO>, LibroUpdateValidator>();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<IGestorArchivos, GestorArchivos>();
 
 var app = builder.Build();
 
@@ -33,5 +52,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseStaticFiles();
 
 app.Run();
