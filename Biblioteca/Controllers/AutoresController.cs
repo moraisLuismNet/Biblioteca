@@ -2,6 +2,7 @@
 using Biblioteca.Models;
 using Biblioteca.Services;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Biblioteca.Controllers
@@ -116,6 +117,7 @@ namespace Biblioteca.Controllers
             return Ok(autores);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<AutorDTO>> Add(AutorInsertDTO autorInsertDTO)
         {
@@ -135,6 +137,7 @@ namespace Biblioteca.Controllers
             return CreatedAtAction(nameof(GetById), new { id = autorDTO.IdAutor }, autorDTO);
         }
 
+        [Authorize]
         [HttpPut("{id:int}")]
         public async Task<ActionResult<AutorDTO>> Update(int id, AutorUpdateDTO autorUpdateDTO)
         {
@@ -154,6 +157,7 @@ namespace Biblioteca.Controllers
             return autorDTO == null ? NotFound() : Ok(autorDTO);
         }
 
+        [Authorize]
         [HttpDelete("{id:int}")]
         public async Task<ActionResult<AutorDTO>> Delete(int id)
         {

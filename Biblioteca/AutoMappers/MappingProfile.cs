@@ -21,6 +21,7 @@ namespace Biblioteca.AutoMappers
             CreateMap<Libro, LibroInsertDTO>().ReverseMap();
             CreateMap<Libro, LibroItemDTO>().ReverseMap();
             CreateMap<Libro, LibroUpdateDTO>().ReverseMap();
+            CreateMap<Usuario, UsuarioDTO>().ReverseMap();
         }
     }
 }
