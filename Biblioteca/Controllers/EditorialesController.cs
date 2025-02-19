@@ -1,4 +1,5 @@
 ﻿using Biblioteca.DTOs;
+using Biblioteca.Models;
 using Biblioteca.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
@@ -53,6 +54,52 @@ namespace Biblioteca.Controllers
             }
 
             return Ok(editorial);
+        }
+
+        [HttpGet("ordenadosNombre/{ascen}")]
+        public async Task<ActionResult<IEnumerable<Editorial>>> GetEditorialesOrdenadasPorNombre(bool ascen)
+        {
+            await _operacionesService.AddOperacion("Obtener editoriales ordenadas por su nombre", "Editoriales");
+            var editoriales = await _editorialService.GetEditorialesOrdenadasPorNombre(ascen);
+
+            if (!editoriales.Any())
+            {
+                return NotFound("No se encontraron editoriales");
+            }
+
+            return Ok(editoriales);
+        }
+
+        [HttpGet("nombre/contiene/{texto}")]
+        public async Task<ActionResult<IEnumerable<Editorial>>> GetEditorialesPorNombreContiene(string texto)
+        {
+            await _operacionesService.AddOperacion("Obtener editoriales con el nombre que contiene", "Editoriales");
+            if (string.IsNullOrEmpty(texto))
+            {
+                return BadRequest("El texto de búsqueda no puede estar vacío.");
+            }
+
+            var editoriales = await _editorialService.GetEditorialesPorNombreContiene(texto);
+
+            if (!editoriales.Any())
+            {
+                return NotFound("No se encontraron editoriales que contengan el texto especificado.");
+            }
+
+            return Ok(editoriales);
+        }
+
+        [HttpGet("paginacion/{desde}/{hasta}")]
+        public async Task<ActionResult<IEnumerable<Editorial>>> GetEditorialesPaginados(int desde, int hasta)
+        {
+            await _operacionesService.AddOperacion("Obtener editoriales paginadas", "Editoriales");
+            if (hasta < desde)
+            {
+                return BadRequest("El máximo no puede ser inferior al mínimo");
+            }
+
+            var editoriales = await _editorialService.GetEditorialesPaginadas(desde, hasta);
+            return Ok(editoriales);
         }
 
         [HttpPost]

@@ -45,6 +45,20 @@ namespace Biblioteca.Services
             return editorial;
         }
 
+        public async Task<IEnumerable<Editorial>> GetEditorialesOrdenadasPorNombre(bool ascendente)
+        {
+            return await _editorialRepository.GetEditorialesOrdenadasPorNombre(ascendente);
+        }
+
+        public async Task<IEnumerable<Editorial>> GetEditorialesPorNombreContiene(string texto)
+        {
+            return await _editorialRepository.GetEditorialesPorNombreContiene(texto);
+        }
+
+        public async Task<IEnumerable<Editorial>> GetEditorialesPaginadas(int desde, int hasta)
+        {
+            return await _editorialRepository.GetEditorialesPaginadas(desde, hasta);
+        }
         public async Task<EditorialDTO> Add(EditorialInsertDTO editorialInsertDTO)
         {
             var editorial = _mapper.Map<Editorial>(editorialInsertDTO);

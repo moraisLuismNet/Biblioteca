@@ -38,6 +38,37 @@ namespace Biblioteca.Repository
             return editorial;
         }
 
+        public async Task<IEnumerable<Editorial>> GetEditorialesOrdenadasPorNombre(bool ascendente)
+        {
+            if (ascendente)
+            {
+                return await _context.Editoriales.OrderBy(x => x.Nombre).ToListAsync();
+            }
+            else
+            {
+                return await _context.Editoriales.OrderByDescending(x => x.Nombre).ToListAsync();
+            }
+        }
+
+        public async Task<IEnumerable<Editorial>> GetEditorialesPorNombreContiene(string texto)
+        {
+            return await _context.Editoriales
+                                 .Where(x => x.Nombre.Contains(texto))
+                                 .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Editorial>> GetEditorialesPaginadas(int desde, int hasta)
+        {
+            if (hasta < desde)
+            {
+                throw new ArgumentException("El máximo no puede ser inferior al mínimo");
+            }
+
+            return await _context.Editoriales
+                .Skip(desde - 1)
+                .Take(hasta - desde + 1)
+                .ToListAsync();
+        }
         public async Task Add(Editorial editorial) =>
             await _context.Editoriales.AddAsync(editorial);
 

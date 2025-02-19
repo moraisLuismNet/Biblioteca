@@ -7,6 +7,9 @@ namespace Biblioteca.Repository
     {
         Task<EditorialLibroDTO?> GetEditorialesLibrosEager(int id);
         Task<bool> ExisteEditorial(int editorialId);
+        Task<IEnumerable<Editorial>> GetEditorialesOrdenadasPorNombre(bool ascendente);
+        Task<IEnumerable<Editorial>> GetEditorialesPorNombreContiene(string texto);
+        Task<IEnumerable<Editorial>> GetEditorialesPaginadas(int desde, int hasta);
     }
 }
 

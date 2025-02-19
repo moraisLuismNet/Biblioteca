@@ -54,6 +54,37 @@ namespace Biblioteca.Repository
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<IEnumerable<Autor>> GetAutoresOrdenadosPorNombre(bool ascendente)
+        {
+            if (ascendente)
+            {
+                return await _context.Autores.OrderBy(x => x.Nombre).ToListAsync();
+            }
+            else
+            {
+                return await _context.Autores.OrderByDescending(x => x.Nombre).ToListAsync();
+            }
+        }
+
+        public async Task<IEnumerable<Autor>> GetAutoresPorNombreContiene(string texto)
+        {
+            return await _context.Autores
+                                 .Where(x => x.Nombre.Contains(texto))
+                                 .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Autor>> GetAutoresPaginados(int desde, int hasta)
+        {
+            if (hasta < desde)
+            {
+                throw new ArgumentException("El máximo no puede ser inferior al mínimo");
+            }
+
+            return await _context.Autores
+                .Skip(desde - 1)
+                .Take(hasta - desde + 1)
+                .ToListAsync();
+        }
         public async Task Add(Autor autor) =>
             await _context.Autores.AddAsync(autor);
 

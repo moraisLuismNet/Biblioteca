@@ -1,4 +1,5 @@
 ﻿using Biblioteca.DTOs;
+using Biblioteca.Models;
 using Biblioteca.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
@@ -67,6 +68,52 @@ namespace Biblioteca.Controllers
             }
 
             return Ok(autor);
+        }
+
+        [HttpGet("ordenadosNombre/{ascen}")]
+        public async Task<ActionResult<IEnumerable<Autor>>> GetAutoresOrdenadosPorNombre(bool ascen)
+        {
+            await _operacionesService.AddOperacion("Obtener autores ordenados por su nombre", "Autores");
+            var autores = await _autorService.GetAutoresOrdenadosPorNombre(ascen);
+
+            if (!autores.Any())
+            {
+                return NotFound("No se encontraron autores");
+            }
+
+            return Ok(autores);
+        }
+
+        [HttpGet("nombre/contiene/{texto}")]
+        public async Task<ActionResult<IEnumerable<Autor>>> GetAutoresPorNombreContiene(string texto)
+        {
+            await _operacionesService.AddOperacion("Obtener autores con el nombre que contiene", "Autores");
+            if (string.IsNullOrEmpty(texto))
+            {
+                return BadRequest("El texto de búsqueda no puede estar vacío.");
+            }
+
+            var autores = await _autorService.GetAutoresPorNombreContiene(texto);
+
+            if (!autores.Any())
+            {
+                return NotFound("No se encontraron autores que contengan el texto especificado.");
+            }
+
+            return Ok(autores);
+        }
+
+        [HttpGet("paginacion/{desde}/{hasta}")]
+        public async Task<ActionResult<IEnumerable<Autor>>> GetAutoresPaginados(int desde, int hasta)
+        {
+            await _operacionesService.AddOperacion("Obtener autores paginados", "Autores");
+            if (hasta < desde)
+            {
+                return BadRequest("El máximo no puede ser inferior al mínimo");
+            }
+
+            var autores = await _autorService.GetAutoresPaginados(desde, hasta);
+            return Ok(autores);
         }
 
         [HttpPost]

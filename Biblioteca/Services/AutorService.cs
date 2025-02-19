@@ -65,6 +65,20 @@ namespace Biblioteca.Services
             return await _autorRepository.GetAutorLibrosSelect(id);
         }
 
+        public async Task<IEnumerable<Autor>> GetAutoresOrdenadosPorNombre(bool ascendente)
+        {
+            return await _autorRepository.GetAutoresOrdenadosPorNombre(ascendente);
+        }
+
+        public async Task<IEnumerable<Autor>> GetAutoresPorNombreContiene(string texto)
+        {
+            return await _autorRepository.GetAutoresPorNombreContiene(texto);
+        }
+
+        public async Task<IEnumerable<Autor>> GetAutoresPaginados(int desde, int hasta)
+        {
+            return await _autorRepository.GetAutoresPaginados(desde, hasta);
+        }
         public async Task<AutorDTO> Add(AutorInsertDTO autorInsertDTO)
         {
             var autor = _mapper.Map<Autor>(autorInsertDTO);
