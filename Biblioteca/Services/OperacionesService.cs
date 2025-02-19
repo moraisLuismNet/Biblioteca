@@ -13,20 +13,43 @@ namespace Biblioteca.Services
             _accessor = accessor;
         }
 
-        public async Task AddOperacion(string operacion, string controller)
+        //public async Task AddOperacion(string operacion, string controller)
+        //{
+        //    Operacion nuevaOperacion = new Operacion()
+        //    {
+        //        FechaAccion = DateTime.Now,
+        //        Operation = operacion,
+        //        Controller = controller,
+        //        Ip = _accessor.HttpContext.Connection.RemoteIpAddress.ToString()
+        //    };
+
+        //    await _context.Operaciones.AddAsync(nuevaOperacion);
+        //    await _context.SaveChangesAsync();
+
+        //    Task.FromResult(0);
+        //}
+
+        public async Task<bool> AddOperacion(string operacion, string controller)
         {
-            Operacion nuevaOperacion = new Operacion()
+            try
             {
-                FechaAccion = DateTime.Now,
-                Operation = operacion,
-                Controller = controller,
-                Ip = _accessor.HttpContext.Connection.RemoteIpAddress.ToString()
-            };
+                var nuevaOperacion = new Operacion
+                {
+                    FechaAccion = DateTime.Now,
+                    Operation = operacion,
+                    Controller = controller,
+                    Ip = _accessor.HttpContext?.Connection?.RemoteIpAddress?.ToString()
+                };
 
-            await _context.Operaciones.AddAsync(nuevaOperacion);
-            await _context.SaveChangesAsync();
-
-            Task.FromResult(0);
+                await _context.Operaciones.AddAsync(nuevaOperacion);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
+
     }
 }

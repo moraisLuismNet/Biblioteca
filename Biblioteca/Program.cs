@@ -46,13 +46,16 @@ builder.Services.AddScoped<IRepository<Autor>, AutorRepository>();
 builder.Services.AddScoped<IRepository<Editorial>, EditorialRepository>();
 builder.Services.AddScoped<IRepository<Libro>, LibroRepository>();
 
+
+
 // Mappers
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 // Add services to the container
-builder.Services.AddKeyedScoped<ICommonService<AutorDTO, AutorInsertDTO, AutorUpdateDTO>, AutorService>("autorService");
-builder.Services.AddKeyedScoped<ICommonService<EditorialDTO, EditorialInsertDTO, EditorialUpdateDTO>, EditorialService>("editorialService");
-builder.Services.AddKeyedScoped<ICommonService<LibroDTO, LibroInsertDTO, LibroUpdateDTO>, LibroService>("libroService");
+builder.Services.AddScoped<ICommonService<AutorDTO, AutorInsertDTO, AutorUpdateDTO>, AutorService>();
+builder.Services.AddScoped<ICommonService<EditorialDTO, EditorialInsertDTO, EditorialUpdateDTO>, EditorialService>();
+builder.Services.AddScoped<ICommonService<LibroDTO, LibroInsertDTO, LibroUpdateDTO>, LibroService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

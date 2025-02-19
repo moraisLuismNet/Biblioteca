@@ -17,7 +17,6 @@ namespace Biblioteca.Services
             _autorRepository = autorRepository;
             _mapper = mapper;
             Errors = new List<string>();
-
         }
 
         public async Task<IEnumerable<AutorDTO>> Get()
@@ -37,6 +36,28 @@ namespace Biblioteca.Services
             }
 
             return null;
+        }
+
+        //public async Task<IEnumerable<AutorLibroDTO>> GetAutoresConDetalles()
+        //{
+        //    var autores = await _autorRepository.GetAutoresConDetalles();
+
+        //    return autores.Select(a => new AutorLibroDTO
+        //    {
+        //        IdAutor = a.IdAutor,
+        //        Nombre = a.Nombre,
+        //        TotalLibros = a.Libros.Count,
+        //        PromedioPrecios = a.Libros.Any() ? a.Libros.Average(l => l.Precio) : 0,
+        //        Libros = a.Libros.Select(l => new LibroItemDTO
+        //        {
+        //            Titulo = l.Titulo
+        //        }).ToList()
+        //    }).ToList();
+        //}
+
+        public async Task<AutorLibroDTO?> GetAutorLibrosSelect(int id)
+        {
+            return await _autorRepository.GetAutorLibrosSelect(id);
         }
 
         public async Task<AutorDTO> Add(AutorInsertDTO autorInsertDTO)
@@ -103,6 +124,51 @@ namespace Biblioteca.Services
             }
             return true;
 
+        }
+
+        public Task<EditorialLibroDTO> GetEditorialesLibrosEager(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<IEnumerable<LibroVentaDTO>> ICommonService<AutorDTO, AutorInsertDTO, AutorUpdateDTO>.GetLibrosYPrecios()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<IEnumerable<LibroGroupDTO>> ICommonService<AutorDTO, AutorInsertDTO, AutorUpdateDTO>.GetLibrosGroupedByDescatalogado()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<Libro>> GetLibrosPaginados(int desde, int hasta)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<IEnumerable<Libro>> ICommonService<AutorDTO, AutorInsertDTO, AutorUpdateDTO>.GetLibrosPorPrecio(decimal precioMin, decimal precioMax)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<Libro>> GetLibrosOrdenadosPorTitulo(bool ascendente)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<IEnumerable<Libro>> ICommonService<AutorDTO, AutorInsertDTO, AutorUpdateDTO>.GetLibrosPorTituloContiene(string texto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Libro> GetLibroPorId(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task EliminarLibro(Libro libro)
+        {
+            throw new NotImplementedException();
         }
     }
 }

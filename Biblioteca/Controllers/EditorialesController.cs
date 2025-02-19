@@ -1,7 +1,6 @@
 ﻿using Biblioteca.DTOs;
 using Biblioteca.Services;
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Biblioteca.Controllers
@@ -13,26 +12,47 @@ namespace Biblioteca.Controllers
         private IValidator<EditorialInsertDTO> _editorialInsertValidator;
         private IValidator<EditorialUpdateDTO> _editorialUpdateValidator;
         private ICommonService<EditorialDTO, EditorialInsertDTO, EditorialUpdateDTO> _editorialService;
+        private readonly OperacionesService _operacionesService;
 
         public EditorialesController(IValidator<EditorialInsertDTO> editorialInsertValidator,
             IValidator<EditorialUpdateDTO> editorialUpdateValidator,
-            [FromKeyedServices("editorialService")]ICommonService<EditorialDTO, EditorialInsertDTO, EditorialUpdateDTO>
-            editorialService)
+            ICommonService<EditorialDTO, EditorialInsertDTO, EditorialUpdateDTO>
+            editorialService, OperacionesService operacionesService)
         {
             _editorialInsertValidator = editorialInsertValidator;
             _editorialUpdateValidator = editorialUpdateValidator;
             _editorialService = editorialService;
+            _operacionesService = operacionesService;
         }
 
         [HttpGet]
-        public async Task<IEnumerable<EditorialDTO>> Get() =>
-            await _editorialService.Get();
-
-        [HttpGet("{id}")]
+        public async Task<ActionResult<IEnumerable<EditorialDTO>>> Get()
+        {
+            await _operacionesService.AddOperacion("Obtener editoriales", "Editoriales");
+            var editoriales = await _editorialService.Get();
+            return Ok(editoriales);
+        }
+            
+        [HttpGet("{id:int}")]
         public async Task<ActionResult<EditorialDTO>> GetById(int id)
         {
+            await _operacionesService.AddOperacion("Obtener editorial por Id", "Editoriales");
             var editorialDTO = await _editorialService.GetById(id);
             return editorialDTO == null ? NotFound() : Ok(editorialDTO);
+        }
+
+        [HttpGet("editorialesLibros/{id:int}")]
+        public async Task<ActionResult<EditorialLibroDTO>> GetEditorialesLibrosEager(int id)
+        {
+            await _operacionesService.AddOperacion("Obtener editorial con todos sus libros", "Editoriales");
+            var editorial = await _editorialService.GetEditorialesLibrosEager(id);
+
+            if (editorial == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(editorial);
         }
 
         [HttpPost]
@@ -54,7 +74,7 @@ namespace Biblioteca.Controllers
             return CreatedAtAction(nameof(GetById), new { id = editorialDTO.IdEditorial }, editorialDTO);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}")]
         public async Task<ActionResult<EditorialDTO>> Update(int id, EditorialUpdateDTO editorialUpdateDTO)
         {
             var validationResult = await _editorialUpdateValidator.ValidateAsync(editorialUpdateDTO);
@@ -73,11 +93,12 @@ namespace Biblioteca.Controllers
             return editorialDTO == null ? NotFound() : Ok(editorialDTO);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<ActionResult<EditorialDTO>> Delete(int id)
         {
             var editorialDTO = await _editorialService.Delete(id);
             return editorialDTO == null ? NotFound() : Ok(editorialDTO);
         }
+
     }
 }

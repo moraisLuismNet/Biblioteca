@@ -1,4 +1,7 @@
-﻿namespace Biblioteca.Services
+﻿using Biblioteca.DTOs;
+using Biblioteca.Models;
+
+namespace Biblioteca.Services
 {
     public interface ICommonService<T, TI, TU>
     {
@@ -10,5 +13,25 @@
         Task<T> Delete(int id);
         bool Validate(TI dto);
         bool Validate(TU dto);
+        //Task<IEnumerable<AutorLibroDTO>> GetAutoresConDetalles();
+        Task<AutorLibroDTO> GetAutorLibrosSelect(int id);
+        Task<EditorialLibroDTO> GetEditorialesLibrosEager(int id);
+        Task<IEnumerable<LibroVentaDTO>> GetLibrosYPrecios();
+        Task<IEnumerable<LibroGroupDTO>> GetLibrosGroupedByDescatalogado();
+        Task<IEnumerable<Libro>> GetLibrosPaginados(int desde, int hasta);
+        Task<IEnumerable<Libro>> GetLibrosPorPrecio(decimal precioMin, decimal precioMax);
+        Task<IEnumerable<Libro>> GetLibrosOrdenadosPorTitulo(bool ascendente);
+        Task<IEnumerable<Libro>> GetLibrosPorTituloContiene(string texto);
+        Task<Libro> GetLibroPorId(int id);
+        Task EliminarLibro(Libro libro);
+
+
+
+
+
+
+
+
+
     }
 }

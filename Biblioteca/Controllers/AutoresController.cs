@@ -1,7 +1,6 @@
 ﻿using Biblioteca.DTOs;
 using Biblioteca.Services;
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Biblioteca.Controllers
@@ -14,11 +13,11 @@ namespace Biblioteca.Controllers
         private IValidator<AutorUpdateDTO> _autorUpdateValidator;
         private ICommonService<AutorDTO, AutorInsertDTO, AutorUpdateDTO> _autorService;
         private readonly OperacionesService _operacionesService;
-
-        public AutoresController(IValidator<AutorInsertDTO> autorInsertValidator,
+        public AutoresController(
+            IValidator<AutorInsertDTO> autorInsertValidator,
             IValidator<AutorUpdateDTO> autorUpdateValidator,
-            [FromKeyedServices("autorService")]ICommonService<AutorDTO, AutorInsertDTO, AutorUpdateDTO>
-            autorService, OperacionesService operacionesService)
+            ICommonService<AutorDTO, AutorInsertDTO, AutorUpdateDTO> autorService, 
+            OperacionesService operacionesService)
         {
             _autorInsertValidator = autorInsertValidator;
             _autorUpdateValidator = autorUpdateValidator;
@@ -27,14 +26,40 @@ namespace Biblioteca.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<AutorDTO>> Get() =>
-            await _autorService.Get();
+        public async Task<ActionResult<IEnumerable<AutorDTO>>> Get()
+        {
+            await _operacionesService.AddOperacion("Obtener autores", "Autores");
+            var autores = await _autorService.Get();
+            return Ok(autores);
+        }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<AutorDTO>> GetById(int id)
         {
+            await _operacionesService.AddOperacion("Obtener autor por Id", "Autores");
             var autorDTO = await _autorService.GetById(id);
             return autorDTO == null ? NotFound() : Ok(autorDTO);
+        }
+
+        //[HttpGet("detalles")]
+        //public async Task<ActionResult<IEnumerable<AutorLibroDTO>>> GetAutoresConDetalles()
+        //{
+        //    var autoresDto = await _autorService.GetAutoresConDetalles();
+        //    return Ok(autoresDto);
+        //}
+
+        [HttpGet("autorLibrosSelect")]
+        public async Task<ActionResult<AutorLibroDTO>> GetAutoresLibrosSelect(int id)
+        {
+            await _operacionesService.AddOperacion("Obtener autor con detalles de sus libros", "Autores");
+            var autor = await _autorService.GetAutorLibrosSelect(id);
+
+            if (autor == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(autor);
         }
 
         [HttpPost]
@@ -56,7 +81,7 @@ namespace Biblioteca.Controllers
             return CreatedAtAction(nameof(GetById), new { id = autorDTO.IdAutor }, autorDTO);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}")]
         public async Task<ActionResult<AutorDTO>> Update(int id, AutorUpdateDTO autorUpdateDTO)
         {
             var validationResult = await _autorUpdateValidator.ValidateAsync(autorUpdateDTO);
@@ -75,11 +100,10 @@ namespace Biblioteca.Controllers
             return autorDTO == null ? NotFound() : Ok(autorDTO);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<ActionResult<AutorDTO>> Delete(int id)
         {
             var autorDTO = await _autorService.Delete(id);
-            await _operacionesService.AddOperacion("Delete", "Autores");
             return autorDTO == null ? NotFound($"Autor con ID {id} no encontrado") : Ok(autorDTO);
         }
     }

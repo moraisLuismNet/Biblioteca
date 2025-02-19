@@ -39,6 +39,12 @@ namespace Biblioteca.Services
             return null;
         }
 
+        public async Task<EditorialLibroDTO?> GetEditorialesLibrosEager(int id)
+        {
+            var editorial = await _editorialRepository.GetEditorialesLibrosEager(id);
+            return editorial;
+        }
+
         public async Task<EditorialDTO> Add(EditorialInsertDTO editorialInsertDTO)
         {
             var editorial = _mapper.Map<Editorial>(editorialInsertDTO);
@@ -102,6 +108,55 @@ namespace Biblioteca.Services
                 return false;
             }
             return true;
+        }
+        public Task GetAutorLibrosSelect(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<AutorLibroDTO> ICommonService<EditorialDTO, EditorialInsertDTO, EditorialUpdateDTO>.GetAutorLibrosSelect(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<IEnumerable<LibroVentaDTO>> ICommonService<EditorialDTO, EditorialInsertDTO, EditorialUpdateDTO>.GetLibrosYPrecios()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<LibroGroupDTO>> GetLibrosGroupedByDescatalogado()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<IEnumerable<Libro>> ICommonService<EditorialDTO, EditorialInsertDTO, EditorialUpdateDTO>.GetLibrosPaginados(int desde, int hasta)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<Libro>> GetLibrosPorPrecio(decimal precioMin, decimal precioMax)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<Libro>> GetLibrosOrdenadosPorTitulo(bool ascendente)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<Libro>> GetLibrosPorTituloContiene(string texto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Libro> GetLibroPorId(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task EliminarLibro(Libro libro)
+        {
+            throw new NotImplementedException();
         }
     }
 }
