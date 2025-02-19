@@ -11,13 +11,13 @@ namespace Biblioteca.Controllers
     {
         private IValidator<EditorialInsertDTO> _editorialInsertValidator;
         private IValidator<EditorialUpdateDTO> _editorialUpdateValidator;
-        private ICommonService<EditorialDTO, EditorialInsertDTO, EditorialUpdateDTO> _editorialService;
+        private IEditorialService _editorialService;
         private readonly OperacionesService _operacionesService;
 
         public EditorialesController(IValidator<EditorialInsertDTO> editorialInsertValidator,
             IValidator<EditorialUpdateDTO> editorialUpdateValidator,
-            ICommonService<EditorialDTO, EditorialInsertDTO, EditorialUpdateDTO>
-            editorialService, OperacionesService operacionesService)
+            IEditorialService editorialService, 
+            OperacionesService operacionesService)
         {
             _editorialInsertValidator = editorialInsertValidator;
             _editorialUpdateValidator = editorialUpdateValidator;

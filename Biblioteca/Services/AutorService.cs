@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Biblioteca.Services
 {
-    public class AutorService : ICommonService<AutorDTO, AutorInsertDTO, AutorUpdateDTO>
+    public class AutorService : IAutorService
     {
         private IAutorRepository _autorRepository;
         private IMapper _mapper;
@@ -129,51 +129,6 @@ namespace Biblioteca.Services
             }
             return true;
 
-        }
-
-        public Task<EditorialLibroDTO> GetEditorialesLibrosEager(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<IEnumerable<LibroVentaDTO>> ICommonService<AutorDTO, AutorInsertDTO, AutorUpdateDTO>.GetLibrosYPrecios()
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<IEnumerable<LibroGroupDTO>> ICommonService<AutorDTO, AutorInsertDTO, AutorUpdateDTO>.GetLibrosGroupedByDescatalogado()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Libro>> GetLibrosPaginados(int desde, int hasta)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<IEnumerable<Libro>> ICommonService<AutorDTO, AutorInsertDTO, AutorUpdateDTO>.GetLibrosPorPrecio(decimal precioMin, decimal precioMax)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Libro>> GetLibrosOrdenadosPorTitulo(bool ascendente)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<IEnumerable<Libro>> ICommonService<AutorDTO, AutorInsertDTO, AutorUpdateDTO>.GetLibrosPorTituloContiene(string texto)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Libro> GetLibroPorId(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task EliminarLibro(Libro libro)
-        {
-            throw new NotImplementedException();
         }
 
     }

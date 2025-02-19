@@ -11,12 +11,12 @@ namespace Biblioteca.Controllers
     {
         private IValidator<AutorInsertDTO> _autorInsertValidator;
         private IValidator<AutorUpdateDTO> _autorUpdateValidator;
-        private ICommonService<AutorDTO, AutorInsertDTO, AutorUpdateDTO> _autorService;
+        private IAutorService _autorService;
         private readonly OperacionesService _operacionesService;
         public AutoresController(
             IValidator<AutorInsertDTO> autorInsertValidator,
             IValidator<AutorUpdateDTO> autorUpdateValidator,
-            ICommonService<AutorDTO, AutorInsertDTO, AutorUpdateDTO> autorService, 
+            IAutorService autorService,
             OperacionesService operacionesService)
         {
             _autorInsertValidator = autorInsertValidator;

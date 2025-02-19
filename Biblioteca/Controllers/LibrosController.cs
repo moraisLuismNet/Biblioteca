@@ -12,13 +12,13 @@ namespace Biblioteca.Controllers
     {
         private IValidator<LibroInsertDTO> _libroInsertValidator;
         private IValidator<LibroUpdateDTO> _libroUpdateValidator;
-        private ICommonService<LibroDTO, LibroInsertDTO, LibroUpdateDTO> _libroService;
+        private ILibroService _libroService;
         private readonly OperacionesService _operacionesService;
 
         public LibrosController(IValidator<LibroInsertDTO> libroInsertValidator,
             IValidator<LibroUpdateDTO> libroUpdateValidator,
-            ICommonService<LibroDTO, LibroInsertDTO, LibroUpdateDTO>
-            libroService, OperacionesService operacionesService)
+            ILibroService libroService,
+            OperacionesService operacionesService)
         {
             _libroInsertValidator = libroInsertValidator;
             _libroUpdateValidator = libroUpdateValidator;

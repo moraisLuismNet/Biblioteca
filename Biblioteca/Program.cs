@@ -49,10 +49,10 @@ builder.Services.AddScoped<IEditorialRepository, EditorialRepository>();
 // Mappers
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-// Add services to the container
-builder.Services.AddScoped<ICommonService<AutorDTO, AutorInsertDTO, AutorUpdateDTO>, AutorService>();
-builder.Services.AddScoped<ICommonService<EditorialDTO, EditorialInsertDTO, EditorialUpdateDTO>, EditorialService>();
-builder.Services.AddScoped<ICommonService<LibroDTO, LibroInsertDTO, LibroUpdateDTO>, LibroService>();
+
+builder.Services.AddScoped<IAutorService, AutorService>();
+builder.Services.AddScoped<IEditorialService, EditorialService>();
+builder.Services.AddScoped<ILibroService, LibroService>();
 
 var app = builder.Build();
 

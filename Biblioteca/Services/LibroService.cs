@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Biblioteca.Services
 {
-    public class LibroService : ICommonService<LibroDTO, LibroInsertDTO, LibroUpdateDTO>
+    public class LibroService : ILibroService
     {
         private ILibroRepository _libroRepository;
         private IMapper _mapper;
@@ -189,25 +189,6 @@ namespace Biblioteca.Services
                 return false;
             }
             return true;
-        }
-
-        public Task<IEnumerable<AutorLibroDTO>> GetAutoresConDetalles()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task GetAutorLibrosSelect(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<AutorLibroDTO> ICommonService<LibroDTO, LibroInsertDTO, LibroUpdateDTO>.GetAutorLibrosSelect(int id)
-        {
-            throw new NotImplementedException();
-        }
-        public async Task<EditorialLibroDTO> GetEditorialesLibrosEager(int id)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<LibroDTO?> Delete(int id)
