@@ -6,7 +6,7 @@ using Biblioteca.DTOs;
 
 namespace Biblioteca.Services
 {
-    public class TokenService
+    public class TokenService : ITokenService
     {
         private readonly IConfiguration _configuration;
 
@@ -14,8 +14,7 @@ namespace Biblioteca.Services
         {
             _configuration = configuration;
         }
-
-        private LoginResponseDTO GenerarToken(UsuarioDTO credencialesUsuario)
+        LoginResponseDTO ITokenService.GenerarToken(UsuarioDTO credencialesUsuario)
         {
             var claims = new List<Claim>()
          {
@@ -42,5 +41,7 @@ namespace Biblioteca.Services
                 Email = credencialesUsuario.Email
             };
         }
+
+        
     }
 }

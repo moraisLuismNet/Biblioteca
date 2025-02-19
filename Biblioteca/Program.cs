@@ -94,6 +94,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<IAutorService, AutorService>();
 builder.Services.AddScoped<IEditorialService, EditorialService>();
 builder.Services.AddScoped<ILibroService, LibroService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddTransient<OperacionesService>();
 builder.Services.AddTransient<IGestorArchivos, GestorArchivos>();
