@@ -2,6 +2,7 @@
 using Biblioteca.DTOs;
 using Biblioteca.Models;
 using Biblioteca.Repository;
+using Microsoft.EntityFrameworkCore;
 
 namespace Biblioteca.Services
 {
@@ -9,14 +10,17 @@ namespace Biblioteca.Services
     {
         private IRepository<Autor> _autorRepository;
         private IMapper _mapper;
+        private BibliotecaContext _context;
         public List<string> Errors { get; }
 
         public AutorService(IRepository<Autor> autorRepository,
-            IMapper mapper)
+            IMapper mapper,
+            BibliotecaContext context)
         {
             _autorRepository = autorRepository;
             _mapper = mapper;
             Errors = new List<string>();
+            _context = context;
         }
 
         public async Task<IEnumerable<AutorDTO>> Get()
@@ -36,24 +40,25 @@ namespace Biblioteca.Services
             }
 
             return null;
+        }  
+
+        public async Task<IEnumerable<AutorLibroDTO>> GetAutoresConDetalles()
+        {
+            return await _context.Autores
+                .Include(a => a.Libros) 
+                .Select(a => new AutorLibroDTO
+                {
+                    IdAutor = a.IdAutor,
+                    Nombre = a.Nombre,
+                    TotalLibros = a.Libros.Count,
+                    PromedioPrecios = a.Libros.Any() ? a.Libros.Average(l => l.Precio) : 0,
+                    Libros = a.Libros.Select(l => new LibroItemDTO
+                    {
+                        Titulo = l.Titulo
+                    }).ToList()
+                })
+                .ToListAsync();
         }
-
-        //public async Task<IEnumerable<AutorLibroDTO>> GetAutoresConDetalles()
-        //{
-        //    var autores = await _autorRepository.GetAutoresConDetalles();
-
-        //    return autores.Select(a => new AutorLibroDTO
-        //    {
-        //        IdAutor = a.IdAutor,
-        //        Nombre = a.Nombre,
-        //        TotalLibros = a.Libros.Count,
-        //        PromedioPrecios = a.Libros.Any() ? a.Libros.Average(l => l.Precio) : 0,
-        //        Libros = a.Libros.Select(l => new LibroItemDTO
-        //        {
-        //            Titulo = l.Titulo
-        //        }).ToList()
-        //    }).ToList();
-        //}
 
         public async Task<AutorLibroDTO?> GetAutorLibrosSelect(int id)
         {
@@ -170,5 +175,6 @@ namespace Biblioteca.Services
         {
             throw new NotImplementedException();
         }
+
     }
 }

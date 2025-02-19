@@ -13,7 +13,7 @@ namespace Biblioteca.Services
         Task<T> Delete(int id);
         bool Validate(TI dto);
         bool Validate(TU dto);
-        //Task<IEnumerable<AutorLibroDTO>> GetAutoresConDetalles();
+        Task<IEnumerable<AutorLibroDTO>> GetAutoresConDetalles();
         Task<AutorLibroDTO> GetAutorLibrosSelect(int id);
         Task<EditorialLibroDTO> GetEditorialesLibrosEager(int id);
         Task<IEnumerable<LibroVentaDTO>> GetLibrosYPrecios();

@@ -41,12 +41,19 @@ namespace Biblioteca.Controllers
             return autorDTO == null ? NotFound() : Ok(autorDTO);
         }
 
-        //[HttpGet("detalles")]
-        //public async Task<ActionResult<IEnumerable<AutorLibroDTO>>> GetAutoresConDetalles()
-        //{
-        //    var autoresDto = await _autorService.GetAutoresConDetalles();
-        //    return Ok(autoresDto);
-        //}
+        [HttpGet("detalles")]
+        public async Task<ActionResult<IEnumerable<AutorLibroDTO>>> GetAutoresConDetalles()
+        {
+            await _operacionesService.AddOperacion("Obtener autores con detalles", "Autores");
+            var autoresDto = await _autorService.GetAutoresConDetalles();
+
+            if (autoresDto == null || !autoresDto.Any()) // Validación para evitar errores en la respuesta
+            {
+                return NotFound("No se encontraron autores con detalles.");
+            }
+
+            return Ok(autoresDto);
+        }
 
         [HttpGet("autorLibrosSelect")]
         public async Task<ActionResult<AutorLibroDTO>> GetAutoresLibrosSelect(int id)

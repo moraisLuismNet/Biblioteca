@@ -19,30 +19,22 @@ namespace Biblioteca.Repository
         public async Task<Autor> GetById(int id) =>
             await _context.Autores.FindAsync(id);
 
-        public async Task<IEnumerable<Autor>> GetAutoresConDetalles()
+        public async Task<IEnumerable<AutorLibroDTO>> GetAutoresConDetalles()
         {
             return await _context.Autores
-                .Include(a => a.Libros)
-                .ToListAsync();
+                .Include(a => a.Libros) 
+                .Select(a => new AutorLibroDTO
+                {
+                    IdAutor = a.IdAutor,
+                    Nombre = a.Nombre,
+                    TotalLibros = a.Libros.Count,
+                    PromedioPrecios = a.Libros.Any() ? a.Libros.Average(l => l.Precio) : 0,
+                    Libros = a.Libros.Select(l => new LibroItemDTO
+                    {
+                        Titulo = l.Titulo
+                    }).ToList()
+                }).ToListAsync(); 
         }
-
-        //public async Task<AutorLibroDTO?> GetAutorLibrosSelect(int id)
-        //{
-        //    return await _context.Autores
-        //        .Where(x => x.IdAutor == id)
-        //        .Select(x => new AutorLibroDTO
-        //        {
-        //            IdAutor = x.IdAutor,
-        //            Nombre = x.Nombre,
-        //            TotalLibros = x.Libros.Count(),
-        //            PromedioPrecios = x.Libros.Any() ? x.Libros.Average(libro => (decimal?)libro.Precio) ?? 0 : 0,
-        //            Libros = x.Libros.Select(y => new LibroItemDTO
-        //            {
-        //                Titulo = y.Titulo
-        //            }).ToList(),
-        //        })
-        //        .FirstOrDefaultAsync();
-        //}
 
         public async Task<AutorLibroDTO?> GetAutorLibrosSelect(int id)
         {

@@ -158,6 +158,11 @@ namespace Biblioteca.Services
         {
             throw new NotImplementedException();
         }
+
+        Task<IEnumerable<AutorLibroDTO>> ICommonService<EditorialDTO, EditorialInsertDTO, EditorialUpdateDTO>.GetAutoresConDetalles()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 
