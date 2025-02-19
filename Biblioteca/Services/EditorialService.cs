@@ -7,11 +7,11 @@ namespace Biblioteca.Services
 {
     public class EditorialService : ICommonService<EditorialDTO, EditorialInsertDTO, EditorialUpdateDTO>
     {
-        private IRepository<Editorial> _editorialRepository;
+        private IEditorialRepository _editorialRepository;
         private IMapper _mapper;
         public List<string> Errors { get; }
 
-        public EditorialService(IRepository<Editorial> editorialRepository,
+        public EditorialService(IEditorialRepository editorialRepository,
             IMapper mapper)
         {
             _editorialRepository = editorialRepository;

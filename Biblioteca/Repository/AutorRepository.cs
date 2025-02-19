@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Biblioteca.Repository
 {
-    public class AutorRepository : IRepository<Autor>
+    public class AutorRepository : IBaseRepository<Autor>, IAutorRepository
     {
         private BibliotecaContext _context;
 
@@ -72,53 +72,7 @@ namespace Biblioteca.Repository
         public IEnumerable<Autor> Search(Func<Autor, bool> filter) =>
         _context.Autores.AsQueryable().Where(filter).ToList();
 
-
-        public Task<EditorialLibroDTO?> GetEditorialesLibrosEager(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<LibroVentaDTO>> GetLibrosYPrecios()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<LibroGroupDTO>> GetLibrosGroupedByDescatalogado()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Libro>> GetLibrosPaginados(int desde, int hasta)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Libro>> GetLibrosPorPrecio(decimal precioMin, decimal precioMax)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Libro>> GetLibrosOrdenadosPorTitulo(bool ascendente)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Libro>> GetLibrosPorTituloContiene(string texto)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Libro> GetLibroPorId(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task DeleteLibro(Libro libro)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> LibroExists(int id)
+        Task<IEnumerable<Libro>> IAutorRepository.GetAutoresConDetalles()
         {
             throw new NotImplementedException();
         }
@@ -128,15 +82,6 @@ namespace Biblioteca.Repository
             throw new NotImplementedException();
         }
 
-        public Task<bool> ExisteEditorial(int editorialId)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<IEnumerable<Libro>> IRepository<Autor>.GetAutoresConDetalles()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
 

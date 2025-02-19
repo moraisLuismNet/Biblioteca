@@ -8,12 +8,12 @@ namespace Biblioteca.Services
 {
     public class LibroService : ICommonService<LibroDTO, LibroInsertDTO, LibroUpdateDTO>
     {
-        private IRepository<Libro> _libroRepository;
+        private ILibroRepository _libroRepository;
         private IMapper _mapper;
         private readonly IGestorArchivos _gestorArchivos;
         public List<string> Errors { get; }
 
-        public LibroService(IRepository<Libro> libroRepository,
+        public LibroService(ILibroRepository libroRepository,
             IMapper mapper, IGestorArchivos gestorArchivos)
         {
             _libroRepository = libroRepository;

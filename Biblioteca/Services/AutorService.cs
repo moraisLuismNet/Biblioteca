@@ -8,12 +8,12 @@ namespace Biblioteca.Services
 {
     public class AutorService : ICommonService<AutorDTO, AutorInsertDTO, AutorUpdateDTO>
     {
-        private IRepository<Autor> _autorRepository;
+        private IAutorRepository _autorRepository;
         private IMapper _mapper;
         private BibliotecaContext _context;
         public List<string> Errors { get; }
 
-        public AutorService(IRepository<Autor> autorRepository,
+        public AutorService(IAutorRepository autorRepository,
             IMapper mapper,
             BibliotecaContext context)
         {

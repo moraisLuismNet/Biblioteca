@@ -42,11 +42,9 @@ builder.Services.AddTransient<IGestorArchivos, GestorArchivos>();
 builder.Services.AddTransient<OperacionesService>();
 
 // Repository
-builder.Services.AddScoped<IRepository<Autor>, AutorRepository>();
-builder.Services.AddScoped<IRepository<Editorial>, EditorialRepository>();
-builder.Services.AddScoped<IRepository<Libro>, LibroRepository>();
-
-
+builder.Services.AddScoped<ILibroRepository, LibroRepository>();
+builder.Services.AddScoped<IAutorRepository, AutorRepository>();
+builder.Services.AddScoped<IEditorialRepository, EditorialRepository>();
 
 // Mappers
 builder.Services.AddAutoMapper(typeof(MappingProfile));

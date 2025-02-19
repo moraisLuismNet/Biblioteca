@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Biblioteca.Repository
 {
-    public class LibroRepository : IRepository<Libro>
+    public class LibroRepository : IBaseRepository<Libro>, ILibroRepository
     {
         private BibliotecaContext _context;
 
@@ -105,26 +105,6 @@ namespace Biblioteca.Repository
 
         public IEnumerable<Libro> Search(Func<Libro, bool> filter) =>
             _context.Libros.Where(filter).ToList();
-
-        public Task<IEnumerable<object>> GetAutoresConDetalles()
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<IEnumerable<Libro>> IRepository<Libro>.GetAutoresConDetalles()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<AutorLibroDTO?> GetAutorLibrosSelect(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<EditorialLibroDTO?> GetEditorialesLibrosEager(int id)
-        {
-            throw new NotImplementedException();
-        }
 
         public void Update(Libro libro)
         {
