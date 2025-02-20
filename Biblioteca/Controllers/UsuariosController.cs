@@ -203,5 +203,29 @@ namespace Biblioteca.Controllers
             // Devolver un 200 OK indicando que el cambio fue exitoso
             return Ok("Password actualizado correctamente");
         }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<ActionResult> GetUsuarios()
+        {
+            var usuarios = await _context.Usuarios.ToListAsync();
+            return Ok(usuarios);
+        }
+
+        [Authorize]
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            var usuario = await _context.Usuarios.FirstOrDefaultAsync(x => x.IdUsuario == id);
+
+            if (usuario is null)
+            {
+                return NotFound();
+            }
+
+            _context.Remove(usuario);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
     }
 }
