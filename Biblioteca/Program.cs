@@ -99,7 +99,7 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddTransient<OperacionesService>();
 builder.Services.AddTransient<IGestorArchivos, GestorArchivos>();
 builder.Services.AddTransient<HashService>();
-builder.Services.AddTransient<TokenService>();
+
 
 builder.Services.AddHttpContextAccessor();
 
