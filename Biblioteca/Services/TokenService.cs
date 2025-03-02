@@ -32,7 +32,6 @@ namespace Biblioteca.Services
                 signingCredentials: signinCredentials
             );
 
-
             var tokenString = new JwtSecurityTokenHandler().WriteToken(securityToken);
 
             return new LoginResponseDTO()

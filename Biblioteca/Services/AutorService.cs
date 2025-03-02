@@ -2,7 +2,6 @@
 using Biblioteca.DTOs;
 using Biblioteca.Models;
 using Biblioteca.Repository;
-using Microsoft.EntityFrameworkCore;
 
 namespace Biblioteca.Services
 {
@@ -10,17 +9,14 @@ namespace Biblioteca.Services
     {
         private IAutorRepository _autorRepository;
         private IMapper _mapper;
-        private BibliotecaContext _context;
         public List<string> Errors { get; }
 
         public AutorService(IAutorRepository autorRepository,
-            IMapper mapper,
-            BibliotecaContext context)
+            IMapper mapper)
         {
             _autorRepository = autorRepository;
             _mapper = mapper;
             Errors = new List<string>();
-            _context = context;
         }
 
         public async Task<IEnumerable<AutorDTO>> Get()
@@ -35,29 +31,20 @@ namespace Biblioteca.Services
 
             if (autor != null)
             {
-                var autorDTO = _mapper.Map<AutorDTO>(autor);
-                return autorDTO;
+                return new AutorDTO
+                {
+                    IdAutor = autor.IdAutor,
+                    NombreAutor = autor.Nombre,
+                    TotalLibros = autor.Libros.Count
+                };
             }
 
             return null;
-        }  
+        }
 
         public async Task<IEnumerable<AutorLibroDTO>> GetAutoresConDetalles()
         {
-            return await _context.Autores
-                .Include(a => a.Libros) 
-                .Select(a => new AutorLibroDTO
-                {
-                    IdAutor = a.IdAutor,
-                    Nombre = a.Nombre,
-                    TotalLibros = a.Libros.Count,
-                    PromedioPrecios = a.Libros.Any() ? a.Libros.Average(l => l.Precio) : 0,
-                    Libros = a.Libros.Select(l => new LibroItemDTO
-                    {
-                        Titulo = l.Titulo
-                    }).ToList()
-                })
-                .ToListAsync();
+            return await _autorRepository.GetAutoresConDetalles();
         }
 
         public async Task<AutorLibroDTO?> GetAutorLibrosSelect(int id)
@@ -65,31 +52,33 @@ namespace Biblioteca.Services
             return await _autorRepository.GetAutorLibrosSelect(id);
         }
 
-        public async Task<IEnumerable<Autor>> GetAutoresOrdenadosPorNombre(bool ascendente)
+        public async Task<IEnumerable<AutorInsertDTO>> GetAutoresOrdenadosPorNombre(bool ascendente)
         {
             return await _autorRepository.GetAutoresOrdenadosPorNombre(ascendente);
         }
 
-        public async Task<IEnumerable<Autor>> GetAutoresPorNombreContiene(string texto)
+        public async Task<IEnumerable<AutorInsertDTO>> GetAutoresPorNombreContiene(string texto)
         {
             return await _autorRepository.GetAutoresPorNombreContiene(texto);
         }
 
-        public async Task<IEnumerable<Autor>> GetAutoresPaginados(int desde, int hasta)
+        public async Task<IEnumerable<AutorInsertDTO>> GetAutoresPaginados(int desde, int hasta)
         {
             return await _autorRepository.GetAutoresPaginados(desde, hasta);
         }
-        public async Task<AutorDTO> Add(AutorInsertDTO autorInsertDTO)
+        
+        public async Task<AutorInsertDTO> Add(AutorInsertDTO autorInsertDTO)
         {
             var autor = _mapper.Map<Autor>(autorInsertDTO);
 
-            await _autorRepository.Add(autor);
+            await _autorRepository.Add(autorInsertDTO);
             await _autorRepository.Save();
 
             var autorDTO = _mapper.Map<AutorDTO>(autor);
 
-            return autorDTO;
+            return autorInsertDTO;
         }
+
         public async Task<AutorDTO> Update(int id, AutorUpdateDTO autorUpdateDTO)
         {
             var autor = await _autorRepository.GetById(id);
@@ -98,13 +87,13 @@ namespace Biblioteca.Services
             {
                 autor = _mapper.Map<AutorUpdateDTO, Autor>(autorUpdateDTO, autor);
 
-                _autorRepository.Update(autor);
-                await _autorRepository.Save();
+                await _autorRepository.Update(autorUpdateDTO);
 
                 var autorDTO = _mapper.Map<AutorDTO>(autor);
 
                 return autorDTO;
             }
+
             return null;
         }
 
@@ -125,7 +114,7 @@ namespace Biblioteca.Services
         }
         public bool Validate(AutorInsertDTO autorInsertDTO)
         {
-            if (_autorRepository.Search(b => b.Nombre == autorInsertDTO.Nombre).Count() > 0)
+            if (_autorRepository.Search(b => b.Nombre == autorInsertDTO.NombreAutor).Count() > 0)
             {
                 Errors.Add("Ya existe un autor con ese nombre");
                 return false;
@@ -135,7 +124,7 @@ namespace Biblioteca.Services
 
         public bool Validate(AutorUpdateDTO autorUpdateDTO)
         {
-            if (_autorRepository.Search(b => b.Nombre == autorUpdateDTO.Nombre && autorUpdateDTO.IdAutor !=
+            if (_autorRepository.Search(b => b.Nombre == autorUpdateDTO.NombreAutor && autorUpdateDTO.IdAutor !=
             b.IdAutor).Count() > 0)
             {
                 Errors.Add("Ya existe un autor con ese nombre");
@@ -144,6 +133,6 @@ namespace Biblioteca.Services
             return true;
 
         }
-
+        
     }
 }

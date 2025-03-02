@@ -27,14 +27,15 @@ namespace Biblioteca.Controllers
             _operacionesService = operacionesService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<EditorialDTO>>> Get()
+        [HttpGet("conTotalLibros")]
+        public async Task<ActionResult> Get()
         {
-            await _operacionesService.AddOperacion("Obtener editoriales", "Editoriales");
+            await _operacionesService.AddOperacion("Obtener editoriales con total libros", "Editoriales");
             var editoriales = await _editorialService.Get();
             return Ok(editoriales);
         }
-            
+
+
         [HttpGet("{id:int}")]
         public async Task<ActionResult<EditorialDTO>> GetById(int id)
         {
@@ -44,10 +45,10 @@ namespace Biblioteca.Controllers
         }
 
         [HttpGet("editorialesLibros/{id:int}")]
-        public async Task<ActionResult<EditorialLibroDTO>> GetEditorialesLibrosEager(int id)
+        public async Task<ActionResult<EditorialLibroDTO>> GetEditorialLibrosSelect(int id)
         {
             await _operacionesService.AddOperacion("Obtener editorial con todos sus libros", "Editoriales");
-            var editorial = await _editorialService.GetEditorialesLibrosEager(id);
+            var editorial = await _editorialService.GetEditorialLibrosSelect(id);
 
             if (editorial == null)
             {
@@ -58,7 +59,7 @@ namespace Biblioteca.Controllers
         }
 
         [HttpGet("ordenadosNombre/{ascen}")]
-        public async Task<ActionResult<IEnumerable<Editorial>>> GetEditorialesOrdenadasPorNombre(bool ascen)
+        public async Task<ActionResult<IEnumerable<EditorialInsertDTO>>> GetEditorialesOrdenadasPorNombre(bool ascen)
         {
             await _operacionesService.AddOperacion("Obtener editoriales ordenadas por su nombre", "Editoriales");
             var editoriales = await _editorialService.GetEditorialesOrdenadasPorNombre(ascen);
@@ -72,26 +73,26 @@ namespace Biblioteca.Controllers
         }
 
         [HttpGet("nombre/contiene/{texto}")]
-        public async Task<ActionResult<IEnumerable<Editorial>>> GetEditorialesPorNombreContiene(string texto)
+        public async Task<ActionResult<IEnumerable<EditorialInsertDTO>>> GetEditorialesPorNombreContiene(string texto)
         {
             await _operacionesService.AddOperacion("Obtener editoriales con el nombre que contiene", "Editoriales");
             if (string.IsNullOrEmpty(texto))
             {
-                return BadRequest("El texto de búsqueda no puede estar vacío.");
+                return BadRequest("El texto de búsqueda no puede estar vacío");
             }
 
             var editoriales = await _editorialService.GetEditorialesPorNombreContiene(texto);
 
             if (!editoriales.Any())
             {
-                return NotFound("No se encontraron editoriales que contengan el texto especificado.");
+                return NotFound("No se encontraron editoriales que contengan el texto especificado");
             }
 
             return Ok(editoriales);
         }
 
         [HttpGet("paginacion/{desde}/{hasta}")]
-        public async Task<ActionResult<IEnumerable<Editorial>>> GetEditorialesPaginados(int desde, int hasta)
+        public async Task<ActionResult<IEnumerable<EditorialInsertDTO>>> GetEditorialesPaginados(int desde, int hasta)
         {
             await _operacionesService.AddOperacion("Obtener editoriales paginadas", "Editoriales");
             if (hasta < desde)
@@ -105,48 +106,50 @@ namespace Biblioteca.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult<EditorialDTO>> Add(EditorialInsertDTO editorialInsertDTO)
+        public async Task<ActionResult<EditorialInsertDTO>> Add([FromBody] EditorialInsertDTO editorial)
         {
-            var validationResult = await _editorialInsertValidator.ValidateAsync(editorialInsertDTO);
+            await _operacionesService.AddOperacion("Añadir editorial", "Editoriales");
+            var validationResult = await _editorialInsertValidator.ValidateAsync(editorial);
             if (!validationResult.IsValid)
-            {
-                return BadRequest(validationResult.Errors);
-            }
+                return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
 
-            if (!_editorialService.Validate(editorialInsertDTO))
-            {
-                return BadRequest(_editorialService.Errors);
-            }
-
-            var editorialDTO = await _editorialService.Add(editorialInsertDTO);
-
-            return CreatedAtAction(nameof(GetById), new { id = editorialDTO.IdEditorial }, editorialDTO);
+            var newEditorial = await _editorialService.Add(editorial);
+            return CreatedAtAction(nameof(Get), new { id = newEditorial.NombreEditorial }, newEditorial);
         }
 
         [Authorize]
-        [HttpPut("{id:int}")]
-        public async Task<ActionResult<EditorialDTO>> Update(int id, EditorialUpdateDTO editorialUpdateDTO)
+        [HttpPut("{idEditorial:int}")]
+        public async Task<IActionResult> Update(int idEditorial, [FromBody] EditorialUpdateDTO editorial)
         {
-            var validationResult = await _editorialUpdateValidator.ValidateAsync(editorialUpdateDTO);
+            await _operacionesService.AddOperacion("Actualizar editorial", "Editoriales");
+            var validationResult = await _editorialUpdateValidator.ValidateAsync(editorial);
             if (!validationResult.IsValid)
+                return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+            if (!ModelState.IsValid)
             {
-                return BadRequest(validationResult.Errors);
+                return BadRequest(ModelState); 
             }
 
-            if (!_editorialService.Validate(editorialUpdateDTO))
+            if (idEditorial != editorial.IdEditorial)
             {
-                return BadRequest(_editorialService.Errors);
+                return BadRequest(new { message = "El ID de la ruta no coincide con el ID del cuerpo" });
             }
 
-            var editorialDTO = await _editorialService.Update(id, editorialUpdateDTO);
+            var editorialActualizada = await _editorialService.Update(idEditorial, editorial);
 
-            return editorialDTO == null ? NotFound() : Ok(editorialDTO);
+            if (editorialActualizada != null)
+            {
+                return Ok(new { message = "La editorial ha sido actualizada exitosamente" }); 
+            }
+
+            return NotFound(new { message = "La editorial no fue encontrada" });
         }
 
         [Authorize]
         [HttpDelete("{id:int}")]
         public async Task<ActionResult<EditorialDTO>> Delete(int id)
         {
+            await _operacionesService.AddOperacion("Eliminar editorial", "Editoriales");
             var editorialDTO = await _editorialService.Delete(id);
             return editorialDTO == null ? NotFound() : Ok(editorialDTO);
         }

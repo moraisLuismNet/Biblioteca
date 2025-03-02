@@ -5,21 +5,17 @@ ASP.NET Core Web API Biblioteca
 ![Biblioteca](img/2.png)
 
 
-
+## Program
+``` 
+builder.Services.AddDbContext<AlmacenContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Connection"))
+);
+``` 
 
 ## appsetting.Development.json
 ``` 
 {
   "ConnectionStrings": {
-        "Connection": "Server=?;Database=Biblioteca;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=True",
-  },
-  "ClaveEncriptacion": "",
-    "ClaveJWT": "",
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
-    }
-  }
+        "Connection": "Server=W11P0RT;Database=Biblioteca;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=True"
 }
 ``` 

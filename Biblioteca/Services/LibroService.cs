@@ -51,22 +51,22 @@ namespace Biblioteca.Services
             return await _libroRepository.GetLibrosGroupedByDescatalogado();
         }
 
-        public async Task<IEnumerable<Libro>> GetLibrosPaginados(int desde, int hasta)
+        public async Task<IEnumerable<LibroDTO>> GetLibrosPaginados(int desde, int hasta)
         {
             return await _libroRepository.GetLibrosPaginados(desde, hasta);
         }
 
-        public async Task<IEnumerable<Libro>> GetLibrosPorPrecio(decimal precioMin, decimal precioMax)
+        public async Task<IEnumerable<LibroDTO>> GetLibrosPorPrecio(decimal precioMin, decimal precioMax)
         {
             return await _libroRepository.GetLibrosPorPrecio(precioMin, precioMax);
         }
 
-        public async Task<IEnumerable<Libro>> GetLibrosOrdenadosPorTitulo(bool ascendente)
+        public async Task<IEnumerable<LibroDTO>> GetLibrosOrdenadosPorTitulo(bool ascendente)
         {
             return await _libroRepository.GetLibrosOrdenadosPorTitulo(ascendente);
         }
 
-        public async Task<IEnumerable<Libro>> GetLibrosPorTituloContiene(string texto)
+        public async Task<IEnumerable<LibroDTO>> GetLibrosPorTituloContiene(string texto)
         {
             return await _libroRepository.GetLibrosPorTituloContiene(texto);
         }
@@ -74,64 +74,35 @@ namespace Biblioteca.Services
         public async Task<LibroDTO> Add(LibroInsertDTO libroInsertDTO)
         {
             var libro = _mapper.Map<Libro>(libroInsertDTO);
-
-            if (libroInsertDTO.Foto != null)
-            {
-                using (var memoryStream = new MemoryStream())
-                {
-                    await libroInsertDTO.Foto.CopyToAsync(memoryStream);
-                    var contenido = memoryStream.ToArray();
-                    var extension = Path.GetExtension(libroInsertDTO.Foto.FileName);
-                    libro.FotoPortada = await _gestorArchivos.GuardarArchivo(contenido, extension, "img", libroInsertDTO.Foto.ContentType);
-                }
-            }
-
-            await _libroRepository.Add(libro);
+            await _libroRepository.Add(libroInsertDTO);
             await _libroRepository.Save();
-
-            return _mapper.Map<LibroDTO>(libro);
+            var librolDTO = _mapper.Map<LibroDTO>(libro);
+            return librolDTO;
         }
-        
+
         public async Task<LibroDTO> Update(int id, LibroUpdateDTO libroUpdateDTO)
         {
             var libro = await _libroRepository.GetById(id);
             
 
-
             if (libro == null)
             {
-                Errors.Add($"Libro con ISBN {id} no encontrado.");
+                Errors.Add($"Libro con ISBN {id} no encontrado");
                 return null;
             }
 
             if (!await _libroRepository.ExisteAutor(libroUpdateDTO.AutorId) || !await _libroRepository.ExisteEditorial(libroUpdateDTO.EditorialId))
             {
-                Errors.Add("Autor o Editorial no existe.");
+                Errors.Add("Autor o Editorial no existe");
                 return null;
-            }
-
-            libro.Titulo = libroUpdateDTO.Titulo;
-            libro.Paginas = libroUpdateDTO.Paginas;
-            libro.Precio = libroUpdateDTO.Precio;
-            libro.Descatalogado = libroUpdateDTO.Descatalogado;
-            libro.AutorId = libroUpdateDTO.AutorId;
-            libro.EditorialId = libroUpdateDTO.EditorialId;
-
-            if (libroUpdateDTO.Foto != null)
-            {
-                await UpdateFotoPortada(libro, libroUpdateDTO.Foto);
-                
-            }
-            else if (!string.IsNullOrEmpty(libro.FotoPortada))
-            {
-                await _gestorArchivos.BorrarArchivo(libro.FotoPortada, "img");
-                libro.FotoPortada = null;
             }
 
             try
             {
-                _libroRepository.Update(libro);
+                await _libroRepository.Update(libroUpdateDTO);
                 await _libroRepository.Save();
+                libro = await _libroRepository.GetById(id);
+                return _mapper.Map<LibroDTO>(libro);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -142,7 +113,7 @@ namespace Biblioteca.Services
                 }
                 throw;
             }
-            return _mapper.Map<LibroDTO>(libro);
+            
         }
 
         public bool Validate(LibroUpdateDTO libroUpdateDTO)
@@ -155,28 +126,12 @@ namespace Biblioteca.Services
             return true;
         }
 
-        private async Task UpdateFotoPortada(Libro libro, IFormFile foto)
-        {
-            if (!string.IsNullOrEmpty(libro.FotoPortada))
-            {
-                await _gestorArchivos.BorrarArchivo(libro.FotoPortada, "img");
-            }
-
-            using (var memoryStream = new MemoryStream())
-            {
-                await foto.CopyToAsync(memoryStream);
-                var contenido = memoryStream.ToArray();
-                var extension = Path.GetExtension(foto.FileName);
-                libro.FotoPortada = await _gestorArchivos.GuardarArchivo(contenido, extension, "img", foto.ContentType);
-            }
-        }
-    
         public async Task<Libro> GetLibroPorId(int id)
         {
             return await _libroRepository.GetLibroPorId(id);
         }
 
-        public async Task EliminarLibro(Libro libro)
+        public async Task EliminarLibro(LibroDTO libro)
         {
             await _libroRepository.DeleteLibro(libro);
         }
@@ -205,7 +160,7 @@ namespace Biblioteca.Services
 
             return _mapper.Map<LibroDTO>(libro);
         }
-
+        
     }
 
 }

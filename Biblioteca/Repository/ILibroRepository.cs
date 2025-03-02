@@ -8,13 +8,21 @@ namespace Biblioteca.Repository
         Task<bool> LibroExists(int id);
         Task<IEnumerable<LibroVentaDTO>> GetLibrosYPrecios();
         Task<IEnumerable<LibroGroupDTO>> GetLibrosGroupedByDescatalogado();
-        Task<IEnumerable<Libro>> GetLibrosPaginados(int desde, int hasta);
-        Task<IEnumerable<Libro>> GetLibrosPorPrecio(decimal precioMin, decimal precioMax);
-        Task<IEnumerable<Libro>> GetLibrosOrdenadosPorTitulo(bool ascendente);
-        Task<IEnumerable<Libro>> GetLibrosPorTituloContiene(string texto);
+        Task<IEnumerable<LibroDTO>> GetLibrosPaginados(int desde, int hasta);
+        Task<IEnumerable<LibroDTO>> GetLibrosPorPrecio(decimal precioMin, decimal precioMax);
+        Task<IEnumerable<LibroDTO>> GetLibrosOrdenadosPorTitulo(bool ascendente);
+        Task<IEnumerable<LibroDTO>> GetLibrosPorTituloContiene(string texto);
         Task<Libro> GetLibroPorId(int id);
-        Task DeleteLibro(Libro libro);
         Task<bool> ExisteAutor(int autorId);
         Task<bool> ExisteEditorial(int editorialId);
+
+        Task<IEnumerable<LibroDTO>> Get();
+
+        Task<LibroDTO> GetById(int id);
+
+        Task Add(LibroInsertDTO libroInsertDTO);
+
+        Task Update(LibroUpdateDTO libroUpdateDTO);
+        Task DeleteLibro(LibroDTO libro);
     }
 }

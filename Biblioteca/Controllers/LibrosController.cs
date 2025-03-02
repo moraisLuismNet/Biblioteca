@@ -40,7 +40,11 @@ namespace Biblioteca.Controllers
         {
             await _operacionesService.AddOperacion("Obtener libro por Id", "Libros");
             var libroDTO = await _libroService.GetById(id);
-            return libroDTO == null ? NotFound() : Ok(libroDTO);
+            if (libroDTO == null)
+            {
+                return NotFound(new { mensaje = "El libro no fue encontrado" });
+            }
+            return Ok(libroDTO);
         }
 
         [HttpGet("venta")]
@@ -63,7 +67,7 @@ namespace Biblioteca.Controllers
         }
 
         [HttpGet("paginacion/{desde}/{hasta}")]
-        public async Task<ActionResult<IEnumerable<Libro>>> GetLibrosPaginados(int desde, int hasta)
+        public async Task<ActionResult<IEnumerable<LibroDTO>>> GetLibrosPaginados(int desde, int hasta)
         {
             await _operacionesService.AddOperacion("Obtener libros paginados", "Libros");
             if (hasta < desde)
@@ -76,7 +80,7 @@ namespace Biblioteca.Controllers
         }
 
         [HttpGet("precio/{min}/{max}")]
-        public async Task<ActionResult<IEnumerable<Libro>>> GetLibrosPorPrecio(decimal min, decimal max)
+        public async Task<ActionResult<IEnumerable<LibroDTO>>> GetLibrosPorPrecio(decimal min, decimal max)
         {
             await _operacionesService.AddOperacion("Obtener libros con un precio determinado", "Libros");
             if (min > max)
@@ -95,7 +99,7 @@ namespace Biblioteca.Controllers
         }
 
         [HttpGet("ordenadosTitulo/{ascen}")]
-        public async Task<ActionResult<IEnumerable<Libro>>> GetLibrosOrdenadosPorTitulo(bool ascen)
+        public async Task<ActionResult<IEnumerable<LibroDTO>>> GetLibrosOrdenadosPorTitulo(bool ascen)
         {
             await _operacionesService.AddOperacion("Obtener libros ordenados por su título", "Libros");
             var libros = await _libroService.GetLibrosOrdenadosPorTitulo(ascen);
@@ -109,19 +113,19 @@ namespace Biblioteca.Controllers
         }
 
         [HttpGet("titulo/contiene/{texto}")]
-        public async Task<ActionResult<IEnumerable<Libro>>> GetLibrosPorTituloContiene(string texto)
+        public async Task<ActionResult<IEnumerable<LibroDTO>>> GetLibrosPorTituloContiene(string texto)
         {
             await _operacionesService.AddOperacion("Obtener libros con el título que contiene", "Libros");
             if (string.IsNullOrEmpty(texto))
             {
-                return BadRequest("El texto de búsqueda no puede estar vacío.");
+                return BadRequest("El texto de búsqueda no puede estar vacío");
             }
 
             var libros = await _libroService.GetLibrosPorTituloContiene(texto);
 
             if (!libros.Any())
             {
-                return NotFound("No se encontraron libros que contengan el texto especificado.");
+                return NotFound("No se encontraron libros que contengan el texto especificado");
             }
 
             return Ok(libros);
@@ -131,6 +135,7 @@ namespace Biblioteca.Controllers
         [HttpPost]
         public async Task<ActionResult<LibroDTO>> Add([FromForm] LibroInsertDTO libroInsertDTO)
         {
+            await _operacionesService.AddOperacion("Añadir libro", "Libros");
             if (!_libroService.Validate(libroInsertDTO))
             {
                 return BadRequest(_libroService.Errors);
@@ -145,16 +150,17 @@ namespace Biblioteca.Controllers
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, [FromForm] LibroUpdateDTO dtoLibro)
         {
+            await _operacionesService.AddOperacion("Aactualizar libro", "Libros");
             if (!_libroService.Validate(dtoLibro))
             {
                 return BadRequest(_libroService.Errors);
             }
 
             var libroActualizado = await _libroService.Update(id, dtoLibro);
-            
+
             if (libroActualizado == null)
             {
-                return NotFound("El libro no fue encontrado o hubo un error.");
+                return NotFound("El libro no fue encontrado o hubo un error");
             }
 
             return Ok(libroActualizado);
@@ -164,6 +170,7 @@ namespace Biblioteca.Controllers
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> Delete([FromRoute] int id)
         {
+            await _operacionesService.AddOperacion("Eliminar libro", "Libros");
             var result = await _libroService.Delete(id);
             if (result == null)
             {

@@ -49,6 +49,7 @@ namespace Biblioteca.Controllers
                 return Unauthorized();
             }
         }
+
         [Authorize]
         [HttpPost("renovarToken")]
         public async Task<ActionResult> RenovarToken([FromBody] UsuarioDTO usuario)

@@ -8,7 +8,7 @@ namespace Biblioteca.Validators
         {
             if (value is int paginas && paginas < 0)
             {
-                return new ValidationResult("El número de páginas no puede ser negativo.");
+                return new ValidationResult("El número de páginas no puede ser negativo");
             }
 
             return ValidationResult.Success;

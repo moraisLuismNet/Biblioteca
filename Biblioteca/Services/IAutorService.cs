@@ -1,5 +1,4 @@
 ﻿using Biblioteca.DTOs;
-using Biblioteca.Models;
 
 namespace Biblioteca.Services
 {
@@ -7,8 +6,10 @@ namespace Biblioteca.Services
     {
         Task<IEnumerable<AutorLibroDTO>> GetAutoresConDetalles();
         Task<AutorLibroDTO> GetAutorLibrosSelect(int id);
-        Task<IEnumerable<Autor>> GetAutoresOrdenadosPorNombre(bool ascendente);
-        Task<IEnumerable<Autor>> GetAutoresPorNombreContiene(string texto);
-        Task<IEnumerable<Autor>> GetAutoresPaginados(int desde, int hasta);
+        Task<IEnumerable<AutorInsertDTO>> GetAutoresOrdenadosPorNombre(bool ascendente);
+        Task<IEnumerable<AutorInsertDTO>> GetAutoresPorNombreContiene(string texto);
+        Task<IEnumerable<AutorInsertDTO>> GetAutoresPaginados(int desde, int hasta);
+        Task<AutorInsertDTO> Add(AutorInsertDTO autorInsertDTO);
+       
     }
 }

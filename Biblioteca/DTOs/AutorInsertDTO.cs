@@ -2,6 +2,6 @@
 {
     public class AutorInsertDTO
     {
-        public string Nombre { get; set; }
+        public string NombreAutor { get; set; }
     }
 }

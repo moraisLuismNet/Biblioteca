@@ -27,10 +27,10 @@ namespace Biblioteca.Controllers
             _operacionesService = operacionesService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<AutorDTO>>> Get()
+        [HttpGet("conTotalLibros")]
+        public async Task<ActionResult> Get()
         {
-            await _operacionesService.AddOperacion("Obtener autores", "Autores");
+            await _operacionesService.AddOperacion("Obtener autores con total libros", "Autores");
             var autores = await _autorService.Get();
             return Ok(autores);
         }
@@ -49,9 +49,9 @@ namespace Biblioteca.Controllers
             await _operacionesService.AddOperacion("Obtener autores con detalles", "Autores");
             var autoresDto = await _autorService.GetAutoresConDetalles();
 
-            if (autoresDto == null || !autoresDto.Any()) // Validación para evitar errores en la respuesta
+            if (autoresDto == null || !autoresDto.Any()) 
             {
-                return NotFound("No se encontraron autores con detalles.");
+                return NotFound("No se encontraron autores con detalles");
             }
 
             return Ok(autoresDto);
@@ -72,7 +72,7 @@ namespace Biblioteca.Controllers
         }
 
         [HttpGet("ordenadosNombre/{ascen}")]
-        public async Task<ActionResult<IEnumerable<Autor>>> GetAutoresOrdenadosPorNombre(bool ascen)
+        public async Task<ActionResult<IEnumerable<AutorInsertDTO>>> GetAutoresOrdenadosPorNombre(bool ascen)
         {
             await _operacionesService.AddOperacion("Obtener autores ordenados por su nombre", "Autores");
             var autores = await _autorService.GetAutoresOrdenadosPorNombre(ascen);
@@ -86,26 +86,26 @@ namespace Biblioteca.Controllers
         }
 
         [HttpGet("nombre/contiene/{texto}")]
-        public async Task<ActionResult<IEnumerable<Autor>>> GetAutoresPorNombreContiene(string texto)
+        public async Task<ActionResult<IEnumerable<AutorInsertDTO>>> GetAutoresPorNombreContiene(string texto)
         {
             await _operacionesService.AddOperacion("Obtener autores con el nombre que contiene", "Autores");
             if (string.IsNullOrEmpty(texto))
             {
-                return BadRequest("El texto de búsqueda no puede estar vacío.");
+                return BadRequest("El texto de búsqueda no puede estar vacío");
             }
 
             var autores = await _autorService.GetAutoresPorNombreContiene(texto);
 
             if (!autores.Any())
             {
-                return NotFound("No se encontraron autores que contengan el texto especificado.");
+                return NotFound("No se encontraron autores que contengan el texto especificado");
             }
 
             return Ok(autores);
         }
 
         [HttpGet("paginacion/{desde}/{hasta}")]
-        public async Task<ActionResult<IEnumerable<Autor>>> GetAutoresPaginados(int desde, int hasta)
+        public async Task<ActionResult<IEnumerable<AutorInsertDTO>>> GetAutoresPaginados(int desde, int hasta)
         {
             await _operacionesService.AddOperacion("Obtener autores paginados", "Autores");
             if (hasta < desde)
@@ -119,48 +119,50 @@ namespace Biblioteca.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult<AutorDTO>> Add(AutorInsertDTO autorInsertDTO)
+        public async Task<ActionResult<AutorInsertDTO>> Add([FromBody] AutorInsertDTO autor)
         {
-            var validationResult = await _autorInsertValidator.ValidateAsync(autorInsertDTO);
+            await _operacionesService.AddOperacion("Añadir autor", "Autores");
+            var validationResult = await _autorInsertValidator.ValidateAsync(autor);
             if (!validationResult.IsValid)
-            {
-                return BadRequest(validationResult.Errors);
-            }
+                return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
 
-            if (!_autorService.Validate(autorInsertDTO))
-            {
-                return BadRequest(_autorService.Errors);
-            }
-
-            var autorDTO = await _autorService.Add(autorInsertDTO);
-
-            return CreatedAtAction(nameof(GetById), new { id = autorDTO.IdAutor }, autorDTO);
+            var newAutor = await _autorService.Add(autor);
+            return CreatedAtAction(nameof(Get), new { id = newAutor.NombreAutor }, newAutor);
         }
 
         [Authorize]
-        [HttpPut("{id:int}")]
-        public async Task<ActionResult<AutorDTO>> Update(int id, AutorUpdateDTO autorUpdateDTO)
+        [HttpPut("{idAutor:int}")]
+        public async Task<IActionResult> Update(int idAutor, [FromBody] AutorUpdateDTO autor)
         {
-            var validationResult = await _autorUpdateValidator.ValidateAsync(autorUpdateDTO);
+            await _operacionesService.AddOperacion("Actualizar autor", "Autores");
+            var validationResult = await _autorUpdateValidator.ValidateAsync(autor);
             if (!validationResult.IsValid)
+                return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+            if (!ModelState.IsValid)
             {
-                return BadRequest(validationResult.Errors);
+                return BadRequest(ModelState);
             }
 
-            if (!_autorService.Validate(autorUpdateDTO))
+            if (idAutor != autor.IdAutor)
             {
-                return BadRequest(_autorService.Errors);
+                return BadRequest(new { message = "El ID de la ruta no coincide con el ID del cuerpo" });
             }
 
-            var autorDTO = await _autorService.Update(id, autorUpdateDTO);
+            var autorActualizado = await _autorService.Update(idAutor, autor);
 
-            return autorDTO == null ? NotFound() : Ok(autorDTO);
+            if (autorActualizado != null)
+            {
+                return Ok(new { message = "El autor ha sido actualizado exitosamente" });
+            }
+
+            return NotFound(new { message = "El autor no fue encontrado" });
         }
 
         [Authorize]
         [HttpDelete("{id:int}")]
         public async Task<ActionResult<AutorDTO>> Delete(int id)
         {
+            await _operacionesService.AddOperacion("Eliminar autor", "Autores");
             var autorDTO = await _autorService.Delete(id);
             return autorDTO == null ? NotFound($"Autor con ID {id} no encontrado") : Ok(autorDTO);
         }

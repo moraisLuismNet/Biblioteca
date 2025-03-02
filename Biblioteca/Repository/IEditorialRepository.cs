@@ -5,11 +5,16 @@ namespace Biblioteca.Repository
 {
     public interface IEditorialRepository : IBaseRepository<Editorial>
     {
-        Task<EditorialLibroDTO?> GetEditorialesLibrosEager(int id);
-        Task<bool> ExisteEditorial(int editorialId);
-        Task<IEnumerable<Editorial>> GetEditorialesOrdenadasPorNombre(bool ascendente);
-        Task<IEnumerable<Editorial>> GetEditorialesPorNombreContiene(string texto);
-        Task<IEnumerable<Editorial>> GetEditorialesPaginadas(int desde, int hasta);
+        Task<EditorialLibroDTO?> GetEditorialLibrosSelect(int id);
+        Task<IEnumerable<EditorialInsertDTO>> GetEditorialesOrdenadasPorNombre(bool ascendente);
+        Task<IEnumerable<EditorialInsertDTO>> GetEditorialesPorNombreContiene(string texto);
+        Task<IEnumerable<EditorialInsertDTO>> GetEditorialesPaginadas(int desde, int hasta);
+        Task<IEnumerable<EditorialDTO>> Get();
+        Task Add(EditorialInsertDTO editorialInsertDTO);
+        Task Update(EditorialUpdateDTO editorialUpdateDTO);
+        Task<Editorial> GetById(int id);
+        void Delete(Editorial editorial);
+
     }
 }
 

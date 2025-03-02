@@ -13,5 +13,6 @@ namespace Biblioteca.Models
 
         // Relación con los libros: un autor puede tener varios libros
         public virtual ICollection<Libro> Libros { get; set; }
+
     }
 }

@@ -32,44 +32,48 @@ namespace Biblioteca.Services
 
             if (editorial != null)
             {
-                var editorialDTO = _mapper.Map<EditorialDTO>(editorial);
-                return editorialDTO;
+                return new EditorialDTO
+                {
+                    IdEditorial = editorial.IdEditorial,
+                    NombreEditorial = editorial.Nombre,
+                    TotalLibros = editorial.Libros.Count
+                };
             }
 
             return null;
         }
 
-        public async Task<EditorialLibroDTO?> GetEditorialesLibrosEager(int id)
+        public async Task<EditorialLibroDTO?> GetEditorialLibrosSelect(int id)
         {
-            var editorial = await _editorialRepository.GetEditorialesLibrosEager(id);
-            return editorial;
+            return await _editorialRepository.GetEditorialLibrosSelect(id);
         }
 
-        public async Task<IEnumerable<Editorial>> GetEditorialesOrdenadasPorNombre(bool ascendente)
+        public async Task<IEnumerable<EditorialInsertDTO>> GetEditorialesOrdenadasPorNombre(bool ascendente)
         {
             return await _editorialRepository.GetEditorialesOrdenadasPorNombre(ascendente);
         }
 
-        public async Task<IEnumerable<Editorial>> GetEditorialesPorNombreContiene(string texto)
+        public async Task<IEnumerable<EditorialInsertDTO>> GetEditorialesPorNombreContiene(string texto)
         {
             return await _editorialRepository.GetEditorialesPorNombreContiene(texto);
         }
 
-        public async Task<IEnumerable<Editorial>> GetEditorialesPaginadas(int desde, int hasta)
+        public async Task<IEnumerable<EditorialInsertDTO>> GetEditorialesPaginadas(int desde, int hasta)
         {
             return await _editorialRepository.GetEditorialesPaginadas(desde, hasta);
         }
-        public async Task<EditorialDTO> Add(EditorialInsertDTO editorialInsertDTO)
+        public async Task<EditorialInsertDTO> Add(EditorialInsertDTO editorialInsertDTO)
         {
             var editorial = _mapper.Map<Editorial>(editorialInsertDTO);
 
-            await _editorialRepository.Add(editorial);
+            await _editorialRepository.Add(editorialInsertDTO);
             await _editorialRepository.Save();
 
             var editorialDTO = _mapper.Map<EditorialDTO>(editorial);
 
-            return editorialDTO;
+            return editorialInsertDTO;
         }
+        
         public async Task<EditorialDTO> Update(int id, EditorialUpdateDTO editorialUpdateDTO)
         {
             var editorial = await _editorialRepository.GetById(id);
@@ -78,14 +82,14 @@ namespace Biblioteca.Services
             {
                 editorial = _mapper.Map<EditorialUpdateDTO, Editorial>(editorialUpdateDTO, editorial);
 
-                _editorialRepository.Update(editorial);
-                await _editorialRepository.Save();
+                await _editorialRepository.Update(editorialUpdateDTO);
 
                 var editorialDTO = _mapper.Map<EditorialDTO>(editorial);
 
                 return editorialDTO;
             }
-            return null;
+
+            return null; 
         }
 
         public async Task<EditorialDTO> Delete(int id)
@@ -103,11 +107,12 @@ namespace Biblioteca.Services
             }
             return null;
         }
+
         public bool Validate(EditorialInsertDTO editorialInsertDTO)
         {
-            if (_editorialRepository.Search(b => b.Nombre == editorialInsertDTO.Nombre).Count() > 0)
+            if (_editorialRepository.Search(b => b.Nombre == editorialInsertDTO.NombreEditorial).Count() > 0)
             {
-                Errors.Add("Ya existe un editorial con ese nombre");
+                Errors.Add("Ya existe una editorial con ese nombre");
                 return false;
             }
             return true;
@@ -115,15 +120,15 @@ namespace Biblioteca.Services
 
         public bool Validate(EditorialUpdateDTO editorialUpdateDTO)
         {
-            if (_editorialRepository.Search(b => b.Nombre == editorialUpdateDTO.Nombre && editorialUpdateDTO.IdEditorial !=
+            if (_editorialRepository.Search(b => b.Nombre == editorialUpdateDTO.NombreEditorial && editorialUpdateDTO.IdEditorial !=
             b.IdEditorial).Count() > 0)
             {
-                Errors.Add("Ya existe un editorial con ese nombre");
+                Errors.Add("Ya existe una editorial con ese nombre");
                 return false;
             }
             return true;
         }
-       
+
     }
 }
 

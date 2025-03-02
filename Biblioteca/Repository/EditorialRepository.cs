@@ -13,51 +13,73 @@ namespace Biblioteca.Repository
             _context = context;
         }
 
-        public async Task<IEnumerable<Editorial>> Get() =>
-            await _context.Editoriales.ToListAsync();
-
-        public async Task<Editorial> GetById(int id) =>
-            await _context.Editoriales.FindAsync(id);
-
-        public async Task<EditorialLibroDTO?> GetEditorialesLibrosEager(int id)
+        public async Task<IEnumerable<EditorialDTO>> Get()
         {
-            var editorial = await _context.Editoriales
-                .Include(e => e.Libros)
-                .Where(e => e.IdEditorial == id)
-                .Select(e => new EditorialLibroDTO
-                {
-                    IdEditorial = e.IdEditorial,
-                    Nombre = e.Nombre,
-                    Libros = e.Libros.Select(l => new LibroItemDTO
-                    {
-                        Titulo = l.Titulo
-                    }).ToList()
-                })
-                .FirstOrDefaultAsync();
-
-            return editorial;
+            var editoriales = await (from x in _context.Editoriales
+                                     select new EditorialDTO
+                                     {
+                                         IdEditorial = x.IdEditorial,
+                                         NombreEditorial = x.Nombre,
+                                         TotalLibros = x.Libros.Count()
+                                     }).ToListAsync();
+            return editoriales;
         }
 
-        public async Task<IEnumerable<Editorial>> GetEditorialesOrdenadasPorNombre(bool ascendente)
+        public async Task<Editorial> GetById(int id)
+        {
+            return await _context.Editoriales
+                .Include(a => a.Libros)
+                .FirstOrDefaultAsync(a => a.IdEditorial == id);
+        }
+
+        public async Task<IEnumerable<EditorialInsertDTO>> GetEditorialesOrdenadasPorNombre(bool ascendente)
         {
             if (ascendente)
             {
-                return await _context.Editoriales.OrderBy(x => x.Nombre).ToListAsync();
+                return await _context.Editoriales
+                    .OrderBy(x => x.Nombre)
+                    .Select(a => new EditorialInsertDTO { NombreEditorial = a.Nombre })
+                    .ToListAsync();
             }
+
             else
             {
-                return await _context.Editoriales.OrderByDescending(x => x.Nombre).ToListAsync();
+                return await _context.Editoriales
+                    .OrderByDescending(x => x.Nombre)
+                    .Select(a => new EditorialInsertDTO { NombreEditorial = a.Nombre })
+                    .ToListAsync();
+
             }
         }
 
-        public async Task<IEnumerable<Editorial>> GetEditorialesPorNombreContiene(string texto)
+        public async Task<EditorialLibroDTO?> GetEditorialLibrosSelect(int id)
+        {
+            return await _context.Editoriales
+                .Where(x => x.IdEditorial == id)
+                .Select(x => new EditorialLibroDTO
+                {
+                    IdEditorial = x.IdEditorial,
+                    NombreEditorial = x.Nombre,
+                    TotalLibros = x.Libros.Count(),
+                    Libros = x.Libros.Select(y => new LibroItemDTO
+                    {
+                        IdLibro = y.IdLibro,
+                        Titulo = y.Titulo,
+                        Precio = y.Precio
+                    }).ToList(),
+                })
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<IEnumerable<EditorialInsertDTO>> GetEditorialesPorNombreContiene(string texto)
         {
             return await _context.Editoriales
                                  .Where(x => x.Nombre.Contains(texto))
+                                 .Select(a => new EditorialInsertDTO { NombreEditorial = a.Nombre })
                                  .ToListAsync();
         }
 
-        public async Task<IEnumerable<Editorial>> GetEditorialesPaginadas(int desde, int hasta)
+        public async Task<IEnumerable<EditorialInsertDTO>> GetEditorialesPaginadas(int desde, int hasta)
         {
             if (hasta < desde)
             {
@@ -67,15 +89,36 @@ namespace Biblioteca.Repository
             return await _context.Editoriales
                 .Skip(desde - 1)
                 .Take(hasta - desde + 1)
+                .Select(a => new EditorialInsertDTO { NombreEditorial = a.Nombre })
                 .ToListAsync();
         }
-        public async Task Add(Editorial editorial) =>
-            await _context.Editoriales.AddAsync(editorial);
-
-        public void Update(Editorial editorial)
+        
+        public async Task Add(EditorialInsertDTO editorialInsertDTO)
         {
-            _context.Editoriales.Attach(editorial);
-            _context.Entry(editorial).State = EntityState.Modified;
+            var editorial = new Editorial
+            {
+                Nombre = editorialInsertDTO.NombreEditorial 
+            };
+
+            _context.Editoriales.Add(editorial);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task Update(EditorialUpdateDTO editorialUpdateDTO)
+        {
+            var editorial = await _context.Editoriales
+                .AsTracking()
+                .FirstOrDefaultAsync(e => e.IdEditorial == editorialUpdateDTO.IdEditorial);
+
+            if (editorial != null)
+            {
+                editorial.Nombre = editorialUpdateDTO.NombreEditorial;
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                throw new Exception("Editorial no encontrada");
+            }
         }
 
         public void Delete(Editorial editorial) =>
@@ -92,10 +135,5 @@ namespace Biblioteca.Repository
             return await _context.Editoriales.Include(e => e.Libros).ToListAsync();
         }
 
-        Task<bool> IEditorialRepository.ExisteEditorial(int editorialId)
-        {
-            throw new NotImplementedException();
-        }
-        
     }
 }
