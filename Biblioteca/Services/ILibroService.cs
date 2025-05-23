@@ -12,7 +12,7 @@ namespace Biblioteca.Services
         Task<IEnumerable<LibroDTO>> GetLibrosOrdenadosPorTitulo(bool ascendente);
         Task<IEnumerable<LibroDTO>> GetLibrosPorTituloContiene(string texto);
         Task<Libro> GetLibroPorId(int id);
-        Task EliminarLibro(LibroDTO libro);
+        // Task EliminarLibro(LibroDTO libro);
         Task<LibroDTO> Add(LibroInsertDTO libroInsertDTO);
     }
 }

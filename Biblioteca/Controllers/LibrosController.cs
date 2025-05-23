@@ -50,7 +50,7 @@ namespace Biblioteca.Controllers
         [HttpGet("venta")]
         public async Task<ActionResult<IEnumerable<LibroVentaDTO>>> GetLibrosYPrecios()
         {
-            await _operacionesService.AddOperacion("Obtener libros y ventas", "Libros");
+            await _operacionesService.AddOperacion("Obtener libros y precios", "Libros");
             var libros = await _libroService.GetLibrosYPrecios();
 
             return Ok(libros);

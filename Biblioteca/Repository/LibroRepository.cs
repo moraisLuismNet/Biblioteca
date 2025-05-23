@@ -237,8 +237,8 @@ namespace Biblioteca.Repository
 
             await _context.SaveChangesAsync();
         }
-        public void Delete(Libro libro) =>
-           _context.Libros.Remove(libro);
+        // public void Delete(Libro libro) =>
+           // _context.Libros.Remove(libro);
 
         public async Task<Libro> GetLibroPorId(int id)
         {
@@ -254,6 +254,7 @@ namespace Biblioteca.Repository
                 throw new KeyNotFoundException("El libro no fue encontrado");
             }
             _context.Libros.Remove(libro);
+			await _gestorArchivos.BorrarArchivo(libro.FotoPortada, "img");
             await _context.SaveChangesAsync();
         }
 

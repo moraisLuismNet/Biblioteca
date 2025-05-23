@@ -10,16 +10,17 @@ namespace Biblioteca.Services
     {
         private ILibroRepository _libroRepository;
         private IMapper _mapper;
-        private readonly IGestorArchivos _gestorArchivos;
+        // private readonly IGestorArchivos _gestorArchivos;
         public List<string> Errors { get; }
 
         public LibroService(ILibroRepository libroRepository,
-            IMapper mapper, IGestorArchivos gestorArchivos)
+            IMapper mapper)
+			// , IGestorArchivos gestorArchivos)
         {
             _libroRepository = libroRepository;
             _mapper = mapper;
             Errors = new List<string>();
-            _gestorArchivos = gestorArchivos;
+            // _gestorArchivos = gestorArchivos;
         }
 
         public async Task<IEnumerable<LibroDTO>> Get()
@@ -131,10 +132,10 @@ namespace Biblioteca.Services
             return await _libroRepository.GetLibroPorId(id);
         }
 
-        public async Task EliminarLibro(LibroDTO libro)
-        {
-            await _libroRepository.DeleteLibro(libro);
-        }
+        // public async Task EliminarLibro(LibroDTO libro)
+        // {
+            // await _libroRepository.DeleteLibro(libro);
+        // }
 
         public bool Validate(LibroInsertDTO libroInsertDTO)
         {
@@ -154,7 +155,7 @@ namespace Biblioteca.Services
                 return null;
             }
 
-            await _gestorArchivos.BorrarArchivo(libro.FotoPortada, "img");
+            // await _gestorArchivos.BorrarArchivo(libro.FotoPortada, "img");
 
             await _libroRepository.DeleteLibro(libro);
 
