@@ -1,6 +1,6 @@
 ## Biblioteca
 
-**Biblioteca** is an ASP.NET Core Web API designed to manage library operations including books (Libro), authors (Autor), and publishers (Editorial).
+**Biblioteca** is an ASP.NET Core Web API designed to manage library operations including books (Libro), authors (Autor), and publishers (Editorial).The application is a complete backend system for managing a library database, providing a RESTful API with CRUD (Create, Read, Update, Delete) functionality for authors, publishers, and books, along with a robust user management system that includes secure authentication and password management, file management, and activity logging.
 
 ![Biblioteca](img/UML.png)
 
@@ -100,5 +100,7 @@ builder.Services.AddDbContext<AlmacenContext>(options =>
         "Connection": "Server=*;Database=Biblioteca;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=True"
 }
 ``` 
+
+![Biblioteca](img/DB.png)
 
 [DeepWiki moraisLuismNet/Biblioteca](https://deepwiki.com/moraisLuismNet/Biblioteca)
