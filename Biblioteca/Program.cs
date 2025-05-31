@@ -26,6 +26,7 @@ builder.Services.AddDbContext<BibliotecaContext>(options =>
     options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 });
 
+
 // Evitar referencias circulares al utilizar include en los controllers
 builder.Services.AddControllers().AddJsonOptions(options =>
 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
